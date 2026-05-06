@@ -6,33 +6,29 @@ pipeline {
     }
 
     stages {
+
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                bat 'npm install'
             }
         }
 
         stage('Build') {
             steps {
-                sh 'npm run build'
+                bat 'npm run build'
             }
         }
 
         stage('Test') {
             steps {
-                sh 'npm test'
-            }
-            post {
-                always {
-                    junit 'junit.xml'
-                }
+                bat 'npm test'
             }
         }
 
         stage('Docker Build') {
             steps {
                 script {
-                    docker.build('norwang2026/be-todo:assignment2')
+                    docker.build('kenchap/be-todo:assignment2')
                 }
             }
         }
@@ -41,7 +37,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-creds') {
-                        docker.image('norwang2026/be-todo:assignment2').push()
+                        docker.image('kenchap/be-todo:assignment2').push()
                     }
                 }
             }
