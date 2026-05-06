@@ -7,28 +7,40 @@ pipeline {
 
     stages {
 
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
-                bat 'npm install'
+                dir('backend') {
+                    bat 'npm install'
+                }
             }
         }
 
         stage('Build') {
             steps {
-                bat 'npm run build'
+                dir('backend') {
+                    bat 'npm run build'
+                }
             }
         }
 
         stage('Test') {
             steps {
-                bat 'npm test'
+                dir('backend') {
+                    bat 'npm test'
+                }
             }
         }
 
         stage('Docker Build') {
             steps {
                 script {
-                    docker.build('kenchap/be-todo:assignment2')
+                    docker.build('kenchap/be-todo:assignment2', 'backend')
                 }
             }
         }
