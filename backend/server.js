@@ -10,10 +10,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
-});
+let pool;
+
+if (process.env.DATABASE_URL) {
+  pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl:
+      process.env.NODE_ENV === "production"
+        ? { rejectUnauthorized: false }
+        : false,
+  });
+}
 
 app.get("/", (req, res) => {
   res.send("Todo Backend API is running successfully");
@@ -21,7 +28,14 @@ app.get("/", (req, res) => {
 
 app.get("/todos", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM todos ORDER BY id DESC");
+    if (!pool) {
+      return res.json([]);
+    }
+
+    const result = await pool.query(
+      "SELECT * FROM todos ORDER BY id DESC"
+    );
+
     res.json(result.rows);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch todos" });
@@ -30,10 +44,18 @@ app.get("/todos", async (req, res) => {
 
 app.post("/todos", async (req, res) => {
   try {
+    if (!pool) {
+      return res.status(500).json({
+        error: "Database not connected",
+      });
+    }
+
     const { title } = req.body;
 
     if (!title) {
-      return res.status(400).json({ error: "Title is required" });
+      return res.status(400).json({
+        error: "Title is required",
+      });
     }
 
     const result = await pool.query(
@@ -43,12 +65,20 @@ app.post("/todos", async (req, res) => {
 
     res.status(201).json(result.rows[0]);
   } catch (error) {
-    res.status(500).json({ error: "Failed to create todo" });
+    res.status(500).json({
+      error: "Failed to create todo",
+    });
   }
 });
 
 app.put("/todos/:id", async (req, res) => {
   try {
+    if (!pool) {
+      return res.status(500).json({
+        error: "Database not connected",
+      });
+    }
+
     const { id } = req.params;
     const { title, completed } = req.body;
 
@@ -59,23 +89,43 @@ app.put("/todos/:id", async (req, res) => {
 
     res.json(result.rows[0]);
   } catch (error) {
-    res.status(500).json({ error: "Failed to update todo" });
+    res.status(500).json({
+      error: "Failed to update todo",
+    });
   }
 });
 
 app.delete("/todos/:id", async (req, res) => {
   try {
+    if (!pool) {
+      return res.status(500).json({
+        error: "Database not connected",
+      });
+    }
+
     const { id } = req.params;
 
-    await pool.query("DELETE FROM todos WHERE id = $1", [id]);
+    await pool.query(
+      "DELETE FROM todos WHERE id = $1",
+      [id]
+    );
 
-    res.json({ message: "Todo deleted successfully" });
+    res.json({
+      message: "Todo deleted successfully",
+    });
   } catch (error) {
-    res.status(500).json({ error: "Failed to delete todo" });
+    res.status(500).json({
+      error: "Failed to delete todo",
+    });
   }
 });
 
 const createTable = async () => {
+  if (!pool) {
+    console.log("No database connection. Skipping table creation.");
+    return;
+  }
+
   await pool.query(`
     CREATE TABLE IF NOT EXISTS todos (
       id SERIAL PRIMARY KEY,
@@ -96,3 +146,5 @@ createTable()
   .catch((error) => {
     console.error("Database connection failed:", error);
   });
+
+module.exports = app;
