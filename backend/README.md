@@ -7,81 +7,45 @@
 
 ## Project Overview
 
-This assignment focuses on implementing a Continuous Integration and Continuous Deployment (CI/CD) pipeline for a Node.js To-Do application using Jenkins. The pipeline automates code retrieval, dependency installation, testing, building, and deployment.
+This assignment demonstrates the implementation of a CI/CD pipeline for a Node.js To-Do application using Jenkins. The pipeline automates code checkout, dependency installation, testing, building, and deployment.
 
-## Tools Used
+## Technologies Used
 
 * Jenkins
 * GitHub
 * Node.js & npm
 * Jest
-* Render
 * PostgreSQL
+* Render
 
-## Jenkins Setup
+## Repository & Deployment
 
-1. Installed Jenkins and accessed it via `localhost:8080`.
-2. Installed the following plugins:
+**GitHub Repository:** https://github.com/Sangay-Kenchap/SangayKenchap_02250366_DSO101_A2.git
 
-   * Pipeline
-   * GitHub Integration
-   * NodeJS Plugin
-3. Configured Node.js in **Manage Jenkins → Global Tool Configuration**.
 
-## GitHub Integration
+## Jenkins Pipeline
 
-* Hosted the project on GitHub.
-* Generated a GitHub Personal Access Token (PAT).
-* Added GitHub credentials in Jenkins for repository access.
+The Jenkins pipeline consists of the following stages:
 
-## Pipeline Configuration
+1. **Checkout** – Retrieve source code from GitHub.
+2. **Install** – Install project dependencies using `npm install`.
+3. **Build** – Build the application using `npm run build`.
+4. **Test** – Execute unit tests using Jest.
+5. **Deploy** – Deploy the application to Render after successful testing.
 
-A `Jenkinsfile` was created with the following stages:
+## Testing
 
-### 1. Checkout
+Jest was used for automated testing.
 
-Retrieves the latest source code from GitHub.
-
-### 2. Install
-
-Installs project dependencies using:
-
-```bash
-npm install
-```
-
-### 3. Build
-
-Builds the application using:
-
-```bash
-npm run build
-```
-
-### 4. Test
-
-Runs unit tests using Jest:
-
-```bash
-npm test
-```
-
-Test reports are published in Jenkins using `jest-junit`.
-
-### 5. Deploy
-
-After successful testing, the application is deployed to Render.
-
-## Testing Setup
-
-Installed testing dependencies:
+Commands used:
 
 ```bash
 npm install --save-dev jest
 npm install --save-dev jest-junit
+npm test
 ```
 
-Configured the test script in `package.json` to generate JUnit reports for Jenkins.
+JUnit reports were generated and published in Jenkins.
 
 ## Deployment
 
@@ -89,7 +53,7 @@ Configured the test script in `package.json` to generate JUnit reports for Jenki
 
 * Deployed as a Render Web Service.
 * Connected to PostgreSQL database.
-* Configured environment variables.
+* Environment variables configured.
 
 ### Frontend
 
@@ -98,26 +62,31 @@ Configured the test script in `package.json` to generate JUnit reports for Jenki
 
 ## Challenges Faced
 
-1. Jenkins initially failed to detect Node.js.
+* Jenkins could not detect Node.js initially.
+* GitHub authentication issues occurred during repository access.
+* Render deployment failed due to configuration errors.
 
-   * Solved by configuring the NodeJS Plugin.
+These issues were resolved through proper Jenkins configuration, GitHub PAT setup, and environment variable management.
 
-2. GitHub authentication issues.
+## Learning Outcomes
 
-   * Solved using a Personal Access Token.
+Through this assignment, I learned:
 
-3. Deployment errors on Render.
-
-   * Fixed by correctly setting environment variables and database configuration.
-
-## Conclusion
-
-The Jenkins CI/CD pipeline successfully automated the build, test, and deployment process of the To-Do application. This implementation improved development efficiency, reduced manual deployment effort, and ensured code quality through automated testing.
+* Jenkins pipeline creation
+* Continuous Integration concepts
+* Automated testing with Jest
+* GitHub and Jenkins integration
+* Automated deployment workflows
+* CI/CD best practices
 
 ## Deliverables
 
-* GitHub Repository Link
+* GitHub Repository
 * Jenkinsfile
 * Jenkins Pipeline Screenshot
 * Test Results Screenshot
-* Render Deployment Screenshots
+* Render Deployment Screenshot
+
+## Conclusion
+
+The CI/CD pipeline successfully automated the build, test, and deployment process of the application. This reduced manual effort, improved reliability, and ensured consistent software delivery.
